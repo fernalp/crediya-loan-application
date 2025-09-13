@@ -10,6 +10,7 @@ import java.math.BigInteger;
 
 public interface LoanApplicationRepository {
 
+    Mono<LoanApplication> save(LoanApplication loanApplication);
     Mono<LoanApplication> findById(BigInteger id);
     Flux<LoanApplication> findByEmail(String email);
     Flux<LoanApplication> findByLoanType(LoanType loanType);
