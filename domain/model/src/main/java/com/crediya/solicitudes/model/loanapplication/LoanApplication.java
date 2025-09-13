@@ -18,6 +18,7 @@ import java.math.BigInteger;
 public class LoanApplication {
 
     private BigInteger id;
+    private String idNumber;
     private BigDecimal amount;
     private BigInteger term;
     private String email;
