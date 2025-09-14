@@ -4,11 +4,10 @@ import lombok.Getter;
 
 @Getter
 public class ValidationException extends IllegalArgumentException{
-    private final String code;
+    private final String code = "VALIDATION_ERROR";
 
-    public ValidationException(String code, String message){
+    public ValidationException(String message){
         super(message);
-        this.code = code;
     }
 
 }

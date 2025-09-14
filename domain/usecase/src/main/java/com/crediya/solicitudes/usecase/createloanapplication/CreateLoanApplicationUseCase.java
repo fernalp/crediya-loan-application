@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 public class CreateLoanApplicationUseCase {
 
     private static final String DEFAULT_LOAN_STATUS = "PENDING";
-    private static final String ERROR_CODE = "VALIDATION_ERROR";
     private static final String ERROR_MESSAGE_LOAN_TYPE_NOT_FOUND = "El tipo de préstamo es inválido!";
     private static final String ERROR_MESSAGE_CUSTOMER_NOT_FOUND = "El cliente no se encuentra registrado!";
 
@@ -40,7 +39,7 @@ public class CreateLoanApplicationUseCase {
     private Mono<LoanApplication> validateLoanType(LoanApplication loanApplication){
         return loanTypeRepository.findByName(loanApplication.getLoanType().getName())
                 .switchIfEmpty(loanTypeRepository.findById(loanApplication.getLoanType().getId()))
-                .switchIfEmpty(Mono.error(new ValidationException(ERROR_CODE,ERROR_MESSAGE_LOAN_TYPE_NOT_FOUND)))
+                .switchIfEmpty(Mono.error(new ValidationException(ERROR_MESSAGE_LOAN_TYPE_NOT_FOUND)))
                 .flatMap(loanType -> {
                     loanApplication.setLoanType(loanType);
                     return Mono.just(loanApplication);
@@ -49,7 +48,7 @@ public class CreateLoanApplicationUseCase {
 
     private Mono<LoanApplication> validateCustomer(LoanApplication loanApplication){
         return customerRepository.findByIdNumber(loanApplication.getIdNumber())
-                .switchIfEmpty(Mono.error(new ValidationException(ERROR_CODE,ERROR_MESSAGE_CUSTOMER_NOT_FOUND)))
+                .switchIfEmpty(Mono.error(new ValidationException(ERROR_MESSAGE_CUSTOMER_NOT_FOUND)))
                 .flatMap(customer -> {
                     loanApplication.setEmail(customer.getEmail());
                     return Mono.just(loanApplication);
