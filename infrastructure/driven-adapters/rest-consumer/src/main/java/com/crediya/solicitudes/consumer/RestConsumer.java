@@ -5,9 +5,12 @@ import com.crediya.solicitudes.model.customer.Customer;
 import com.crediya.solicitudes.model.customer.gateways.CustomerRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,9 @@ public class RestConsumer implements CustomerRepository {
                 .get()
                 .uri("/" + idNumber)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty())
+                .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.empty())
+                .onStatus(Objects::isNull, response -> Mono.empty())
                 .bodyToMono(CustomerResponse.class)
                 .map(CustomerRestMapper::toCustomer);
     }

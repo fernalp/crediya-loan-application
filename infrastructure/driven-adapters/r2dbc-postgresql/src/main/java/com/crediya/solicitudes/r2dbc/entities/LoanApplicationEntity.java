@@ -21,7 +21,7 @@ public class LoanApplicationEntity {
     @Id
     private BigInteger id;
     private BigDecimal amount;
-    private BigInteger term;
+    private Integer term;
     private String email;
     @Column("id_loan_status")
     private Integer idLoanStatus;

@@ -10,4 +10,9 @@ public class ValidationException extends IllegalArgumentException{
         super(message);
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s: %s", code, super.getMessage());
+    }
+
 }

@@ -20,7 +20,7 @@ public class LoanApplication {
     private BigInteger id;
     private String idNumber;
     private BigDecimal amount;
-    private BigInteger term;
+    private Integer term;
     private String email;
     private LoanStatus loanStatus;
     private LoanType loanType;
