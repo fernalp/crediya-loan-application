@@ -1,6 +1,7 @@
 package com.crediya.solicitudes.usecase.createloanapplication;
 
 import com.crediya.solicitudes.model.customer.gateways.CustomerRepository;
+import com.crediya.solicitudes.model.customer.gateways.JwtGateway;
 import com.crediya.solicitudes.model.exception.ValidationException;
 import com.crediya.solicitudes.model.loanapplication.LoanApplication;
 import com.crediya.solicitudes.model.loanapplication.gateways.LoanApplicationRepository;
@@ -17,11 +18,13 @@ public class CreateLoanApplicationUseCase {
     private static final String ERROR_MESSAGE_LOAN_TYPE_NOT_FOUND = "El tipo de préstamo es inválido!";
     private static final String ERROR_MESSAGE_CUSTOMER_NOT_FOUND = "El cliente no se encuentra registrado!";
     private static final String ERROR_MESSAGE_CONNECTION_REFUSED = "Ah ocurrido un error, por favor contacte al administrador!";
+    private static final String ERROR_MESSAGE_CONFLICT_USER = "No puede solicitar un préstamo para un usuario diferente al que se encuentra autenticado!";
 
     private final LoanApplicationRepository loanApplicationRepository;
     private final LoanTypeRepository loanTypeRepository;
     private final LoanStatusRepository loanStatusRepository;
     private final CustomerRepository customerRepository;
+    private final JwtGateway jwtGateway;
 
     public Mono<LoanApplication> execute(LoanApplication loanApplication) {
         return this.validateLoanApplication(loanApplication)
@@ -47,15 +50,23 @@ public class CreateLoanApplicationUseCase {
     }
 
     private Mono<LoanApplication> validateCustomer(LoanApplication loanApplication){
-        return customerRepository.findByIdNumber(loanApplication.getIdNumber())
+        return customerRepository.findByIdNumber(loanApplication.getIdNumber(), loanApplication.getToken())
                 .onErrorResume(error -> Mono.error(new CommunicationException(ERROR_MESSAGE_CONNECTION_REFUSED)))
                 .switchIfEmpty(Mono.error(new ValidationException(ERROR_MESSAGE_CUSTOMER_NOT_FOUND)))
                 .flatMap(customer -> {
                     if (customer.getEmail() == null) {
                         return Mono.error(new ValidationException(ERROR_MESSAGE_CUSTOMER_NOT_FOUND));
                     }
-                    loanApplication.setEmail(customer.getEmail());
-                    return Mono.just(loanApplication);
+                    return jwtGateway.extractUsername(loanApplication.getToken())
+                                    .flatMap(username -> {
+                                        if (!username.equals(customer.getEmail())) {
+                                            return Mono.error(new ValidationException(ERROR_MESSAGE_CONFLICT_USER));
+                                        }
+                                        loanApplication.setEmail(customer.getEmail());
+                                        return Mono.just(loanApplication);
+                                    });
                 });
     }
+
+
 }

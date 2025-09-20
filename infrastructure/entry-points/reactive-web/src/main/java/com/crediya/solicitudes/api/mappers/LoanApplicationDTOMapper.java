@@ -39,5 +39,13 @@ public class LoanApplicationDTOMapper {
         }
         return Mono.just(Objects.requireNonNull(target));
     }
+
+    public static Mono<LoanApplication> setToken(LoanApplication loanApplication, String jwt) {
+        return validateNull(jwt)
+                .map(token -> {
+                    loanApplication.setToken(token);
+                    return loanApplication;
+                });
+    }
 }
 

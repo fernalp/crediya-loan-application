@@ -78,7 +78,7 @@ class CreateLoanApplicationUseCaseTest {
     void shouldCreateLoanApplicationWhenAllDataIsCorrect() {
         when(loanTypeRepository.findByName(fakeLoanApplication.getLoanType().getName())).thenReturn(Mono.just(fakeLoanType));
         when(loanStatusRepository.findByName(fakeLoanApplication.getLoanStatus().getName())).thenReturn(Mono.just(fakeLoanStatus));
-        when(customerRepository.findByIdNumber(fakeLoanApplication.getIdNumber())).thenReturn(Mono.just(fakeCustomer));
+        when(customerRepository.findByIdNumber(fakeLoanApplication.getIdNumber(), anyString())).thenReturn(Mono.just(fakeCustomer));
         when(loanApplicationRepository.save(fakeLoanApplication)).thenReturn(Mono.just(fakeLoanApplication));
 
         Mono<LoanApplication> result = createLoanApplicationUseCase.execute(fakeLoanApplication);
@@ -106,7 +106,7 @@ class CreateLoanApplicationUseCaseTest {
         String message = "message";
         when(loanStatusRepository.findByName(anyString())).thenReturn(Mono.just(fakeLoanStatus));
         when(loanTypeRepository.findByName(anyString())).thenReturn(Mono.just(fakeLoanType));
-        when(customerRepository.findByIdNumber(fakeLoanApplication.getIdNumber())).thenReturn(Mono.empty());
+        when(customerRepository.findByIdNumber(fakeLoanApplication.getIdNumber(), anyString())).thenReturn(Mono.empty());
 
         Mono<LoanApplication> result = createLoanApplicationUseCase.execute(fakeLoanApplication);
 
@@ -120,7 +120,7 @@ class CreateLoanApplicationUseCaseTest {
         String message = "message";
         when(loanStatusRepository.findByName(anyString())).thenReturn(Mono.just(fakeLoanStatus));
         when(loanTypeRepository.findByName(anyString())).thenReturn(Mono.just(fakeLoanType));
-        when(customerRepository.findByIdNumber(anyString())).thenReturn(Mono.error(new CommunicationException(message)));
+        when(customerRepository.findByIdNumber(anyString(), anyString())).thenReturn(Mono.error(new CommunicationException(message)));
 
         Mono<LoanApplication> result = createLoanApplicationUseCase.execute(fakeLoanApplication);
 

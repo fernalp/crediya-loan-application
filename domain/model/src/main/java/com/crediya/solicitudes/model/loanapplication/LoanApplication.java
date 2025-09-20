@@ -24,5 +24,6 @@ public class LoanApplication {
     private String email;
     private LoanStatus loanStatus;
     private LoanType loanType;
+    private String token;
 
 }

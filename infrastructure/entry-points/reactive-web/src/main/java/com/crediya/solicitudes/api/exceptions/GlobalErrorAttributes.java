@@ -1,6 +1,7 @@
 package com.crediya.solicitudes.api.exceptions;
 
 import com.crediya.solicitudes.model.exception.ValidationException;
+import com.crediya.solicitudes.security.exceptions.CustomAuthenticationException;
 import com.crediya.solicitudes.usecase.exceptions.CommunicationException;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
@@ -37,6 +38,11 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
                 errorMap.put("timestamp", LocalDateTime.now());
             }
             case CommunicationException exception -> {
+                errorMap.put("code", exception.getCode());
+                errorMap.put("message", error.getMessage());
+                errorMap.put("timestamp", LocalDateTime.now());
+            }
+            case CustomAuthenticationException exception -> {
                 errorMap.put("code", exception.getCode());
                 errorMap.put("message", error.getMessage());
                 errorMap.put("timestamp", LocalDateTime.now());

@@ -1,6 +1,7 @@
 package com.crediya.solicitudes.api.exceptions;
 
 import com.crediya.solicitudes.model.exception.ValidationException;
+import com.crediya.solicitudes.security.exceptions.CustomAuthenticationException;
 import com.crediya.solicitudes.usecase.exceptions.CommunicationException;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
@@ -43,6 +44,9 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
         }
         if (error instanceof CommunicationException){
             return badGatewayException(errorAttributes);
+        }
+        if (error instanceof CustomAuthenticationException){
+            return renderUnauthorizedException(errorAttributes);
         }
         return renderInternalServerError(errorAttributes);
     }

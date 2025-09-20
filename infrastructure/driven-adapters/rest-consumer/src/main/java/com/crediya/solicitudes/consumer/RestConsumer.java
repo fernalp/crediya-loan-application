@@ -15,6 +15,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class RestConsumer implements CustomerRepository {
+
     private final WebClient client;
 
     // these methods are an example that illustrates the implementation of WebClient.
@@ -37,10 +38,11 @@ public class RestConsumer implements CustomerRepository {
 
     @CircuitBreaker(name = "getCustomerByIdNumber")
     @Override
-    public Mono<Customer> findByIdNumber(String idNumber) {
+    public Mono<Customer> findByIdNumber(String idNumber, String token) {
         return client
                 .get()
                 .uri("/" + idNumber)
+                .header("Authorization", "Bearer " + token)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.empty())
                 .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.empty())

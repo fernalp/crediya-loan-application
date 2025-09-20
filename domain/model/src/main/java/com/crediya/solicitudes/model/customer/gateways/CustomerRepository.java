@@ -5,6 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface CustomerRepository {
 
-    Mono<Customer> findByIdNumber(String idNumber);
+    Mono<Customer> findByIdNumber(String idNumber, String token);
 
 }
