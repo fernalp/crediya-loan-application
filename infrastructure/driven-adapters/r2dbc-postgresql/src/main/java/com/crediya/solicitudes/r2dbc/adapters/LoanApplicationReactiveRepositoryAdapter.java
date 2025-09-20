@@ -1,5 +1,7 @@
 package com.crediya.solicitudes.r2dbc.adapters;
 
+import com.crediya.solicitudes.model.PageFilter;
+import com.crediya.solicitudes.model.PageResponse;
 import com.crediya.solicitudes.model.loanapplication.LoanApplication;
 import com.crediya.solicitudes.model.loanapplication.gateways.LoanApplicationRepository;
 import com.crediya.solicitudes.model.loanstatus.LoanStatus;
@@ -36,6 +38,19 @@ public class LoanApplicationReactiveRepositoryAdapter extends ReactiveAdapterOpe
         return this.repository
                 .save(LoanApplicationEntityMapper.toEntity(loanApplication))
                 .map(LoanApplicationEntityMapper::toLoanApplication);
+    }
+
+    @Override
+    public Flux<LoanApplication> findAllByFilter(PageFilter pageFilter) {
+        int limit = pageFilter.getSize();
+        int offset = pageFilter.getPage() * (limit - 1);
+        return this.repository.findAllByPendingPage(limit, offset)
+                .map(LoanApplicationEntityMapper::toLoanApplication);
+    }
+
+    @Override
+    public Flux<Integer> countByLoanStatus(LoanStatus loanStatus) {
+        return this.repository.countByLoanStatus(loanStatus.getId());
     }
 
     @Override
