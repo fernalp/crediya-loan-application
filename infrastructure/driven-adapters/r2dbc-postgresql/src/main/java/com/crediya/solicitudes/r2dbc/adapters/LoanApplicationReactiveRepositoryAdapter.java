@@ -49,7 +49,7 @@ public class LoanApplicationReactiveRepositoryAdapter extends ReactiveAdapterOpe
     }
 
     @Override
-    public Flux<Integer> countByLoanStatus(LoanStatus loanStatus) {
+    public Mono<Long> countByLoanStatus(LoanStatus loanStatus) {
         return this.repository.countByLoanStatus(loanStatus.getId());
     }
 

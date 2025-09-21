@@ -14,7 +14,7 @@ public interface LoanApplicationRepository {
 
     Mono<LoanApplication> save(LoanApplication loanApplication);
     Flux<LoanApplication> findAllByFilter(PageFilter pageFilter);
-    Flux<Integer> countByLoanStatus(LoanStatus loanStatus);
+    Mono<Long> countByLoanStatus(LoanStatus loanStatus);
     Mono<LoanApplication> findById(BigInteger id);
     Flux<LoanApplication> findByEmail(String email);
     Flux<LoanApplication> findByLoanType(LoanType loanType);
