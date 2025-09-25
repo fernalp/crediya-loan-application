@@ -1,5 +1,6 @@
 package com.crediya.solicitudes.security.config.jwt;
 
+import com.crediya.solicitudes.model.constants.LoanConstants;
 import com.crediya.solicitudes.security.exceptions.CustomAuthenticationException;
 import com.crediya.solicitudes.security.services.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -18,23 +19,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationConverter implements ServerAuthenticationConverter {
 
-    private static final String MESSAGE_INVALID_TOKEN = "El token es inválido, por favor inicia sesión de nuevo!!";
     private final JwtProvider jwtProvider;
 
     @Override
     public Mono<Authentication> convert(ServerWebExchange exchange) {
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith(LoanConstants.BEARER_PREFIX)) {
             return Mono.empty();
         }
-        String token = authHeader.substring(7);
+        String token = authHeader.substring(LoanConstants.BEARER_PREFIX_LENGTH);
         return jwtProvider.extractClaims(token)
-                .onErrorResume(e -> Mono.error(new CustomAuthenticationException(MESSAGE_INVALID_TOKEN)))
+                .onErrorResume(e -> Mono.error(new CustomAuthenticationException(LoanConstants.ERROR_MESSAGE_INVALID_TOKEN)))
                 .map(claims -> {
                     String username = claims.getSubject();
-                    String role = claims.get("role", String.class);
-                    var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                    String role = claims.get(LoanConstants.ROLE_CLAIM, String.class);
+                    var authorities = List.of(new SimpleGrantedAuthority(LoanConstants.AUTHORITY_PREFIX + role));
                     return new UsernamePasswordAuthenticationToken(username, null, authorities);
                 })
                 ;

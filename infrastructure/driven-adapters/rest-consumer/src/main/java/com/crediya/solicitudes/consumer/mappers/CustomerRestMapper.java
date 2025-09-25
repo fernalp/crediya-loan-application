@@ -7,16 +7,16 @@ public class CustomerRestMapper {
 
     public static Customer toCustomer(CustomerResponse customerResponse) {
         return Customer.builder()
-                .id(customerResponse.getId())
-                .idNumber(customerResponse.getNumeroIdentificacion())
-                .firstName(customerResponse.getNombres())
-                .lastName(customerResponse.getApellidos())
-                .birthDate(customerResponse.getFechaNacimiento())
-                .address(customerResponse.getDireccion())
-                .phone(customerResponse.getTelefono())
-                .email(customerResponse.getCorreoElectronico())
-                .salary(customerResponse.getSalario())
-                .idRole(customerResponse.getIdRol())
+                .id(customerResponse.id())
+                .idNumber(customerResponse.numeroIdentificacion())
+                .firstName(customerResponse.nombres())
+                .lastName(customerResponse.apellidos())
+                .birthDate(customerResponse.fechaNacimiento())
+                .address(customerResponse.direccion())
+                .phone(customerResponse.telefono())
+                .email(customerResponse.correoElectronico())
+                .salary(customerResponse.salario())
+                .idRole(customerResponse.idRol())
                 .build();
     }
 

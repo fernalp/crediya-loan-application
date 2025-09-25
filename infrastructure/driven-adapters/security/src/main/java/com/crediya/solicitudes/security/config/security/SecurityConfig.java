@@ -1,5 +1,6 @@
 package com.crediya.solicitudes.security.config.security;
 
+import com.crediya.solicitudes.model.constants.LoanConstants;
 import com.crediya.solicitudes.security.config.jwt.JwtAuthenticationConverter;
 import com.crediya.solicitudes.security.exceptions.CustomAccessDeniedException;
 import com.crediya.solicitudes.security.exceptions.CustomAuthenticationEntryPoint;
@@ -21,14 +22,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String[] AUTH_WHITELIST = {
-            "/api/doc/swagger-ui.html",
-            "/api/doc/api-docs/**",
-            "/api/doc/swagger-ui/**",
-            "/docs",
-            "/scalar/**"
-    };
-
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
     private final CustomAccessDeniedException customAccessDeniedException;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -49,7 +42,7 @@ public class SecurityConfig {
                                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 )
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(AUTH_WHITELIST).permitAll()
+                        .pathMatchers(LoanConstants.AUTH_WHITELIST).permitAll()
                         .anyExchange().authenticated()
 
                 ).addFilterAt(authFilter, SecurityWebFiltersOrder.AUTHENTICATION);

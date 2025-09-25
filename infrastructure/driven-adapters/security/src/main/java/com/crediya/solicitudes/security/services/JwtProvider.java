@@ -10,7 +10,6 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 @Component
 public class JwtProvider implements JwtGateway {
@@ -36,9 +35,4 @@ public class JwtProvider implements JwtGateway {
                 .map(Claims::getSubject);
     }
 
-    public Mono<Boolean> isTokenExpired(String token) {
-        return extractClaims(token)
-                .map(Claims::getExpiration)
-                .map(expiration -> expiration.before(new Date()));
-    }
 }

@@ -1,13 +1,18 @@
 package com.crediya.solicitudes.api.mappers;
 
 import com.crediya.solicitudes.api.dtos.CreateLoanApplicationDTO;
+import com.crediya.solicitudes.api.dtos.LoanApplicationResponseAdvisorDTO;
 import com.crediya.solicitudes.api.dtos.LoanApplicationResponseDTO;
+import com.crediya.solicitudes.api.dtos.PageResponseDTO;
+import com.crediya.solicitudes.model.PageResponse;
 import com.crediya.solicitudes.model.exception.ValidationException;
 import com.crediya.solicitudes.model.loanapplication.LoanApplication;
 import com.crediya.solicitudes.model.loantype.LoanType;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class LoanApplicationDTOMapper {
 
@@ -31,6 +36,39 @@ public class LoanApplicationDTOMapper {
                         application.getLoanType().getName(),
                         application.getLoanStatus().getName()
                 ));
+    }
+
+    public static LoanApplicationResponseAdvisorDTO loanApplicationResponseAdvisorDTO(LoanApplication application) {
+        return new LoanApplicationResponseAdvisorDTO(
+                application.getId(),
+                application.getAmount(),
+                application.getTerm(),
+                application.getEmail(),
+                application.getCustomer().getFirstName() + " " + application.getCustomer().getLastName(),
+                application.getLoanType().getName(),
+                application.getLoanType().getInterestRate(),
+                application.getLoanStatus().getName(),
+                application.getCustomer().getSalary(),
+                application.getMonthlyPayment()
+        );
+    }
+
+
+
+    public static Mono<PageResponseDTO<LoanApplicationResponseAdvisorDTO>> toPageResponseDTO(PageResponse<LoanApplication> page) {
+        return validateNull(page)
+                .map(p -> {
+                    List<LoanApplicationResponseAdvisorDTO> items = p.content().stream()
+                            .map(LoanApplicationDTOMapper::loanApplicationResponseAdvisorDTO)
+                            .collect(Collectors.toList());
+                    return new PageResponseDTO<>(
+                            p.page(),
+                            p.size(),
+                            p.totalElements(),
+                            p.totalPages(),
+                            items
+                    );
+                });
     }
 
     private static <T> Mono<T> validateNull(T target) {

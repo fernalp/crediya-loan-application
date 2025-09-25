@@ -1,5 +1,6 @@
 package com.crediya.solicitudes.api.validator;
 
+import com.crediya.solicitudes.model.constants.LoanConstants;
 import com.crediya.solicitudes.model.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -17,6 +18,9 @@ public class ReactiveValidator {
     private final Validator validator;
 
     public <T> Mono<T> validate(T target) {
+        if (target == null) {
+            return Mono.error(new ValidationException(LoanConstants.NO_NULL));
+        }
         Set<ConstraintViolation<T>> violations = validator.validate(target);
         String message = violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.joining(", "));
         if (!violations.isEmpty()) {

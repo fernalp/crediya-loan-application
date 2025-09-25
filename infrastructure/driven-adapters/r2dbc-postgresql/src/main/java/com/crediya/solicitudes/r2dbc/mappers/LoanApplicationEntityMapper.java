@@ -28,6 +28,8 @@ public class LoanApplicationEntityMapper {
                 .id(loanApplicationEntity.getId())
                 .amount(loanApplicationEntity.getAmount())
                 .email(loanApplicationEntity.getEmail())
+                .idLoanType(loanApplicationEntity.getIdLoanType())
+                .idLoanStatus(loanApplicationEntity.getIdLoanStatus())
                 .loanType(loanApplicationEntity.getLoanType())
                 .loanStatus(loanApplicationEntity.getLoanStatus())
                 .term(loanApplicationEntity.getTerm())

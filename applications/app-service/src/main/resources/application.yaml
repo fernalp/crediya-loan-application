@@ -15,8 +15,8 @@ adapters:
   r2dbc:
     host: "localhost"
     port: 5433
-    database: "crediya-solicitudes"
     schema: "public"
+    database: "crediya-solicitudes"
     username: "crediya-solicitudes"
     password: "crediya-solicitudes"
   restconsumer:
@@ -56,4 +56,4 @@ springdoc:
     path: "/api/doc/api-docs"
 
 jwt:
-  secret: "4535abb79c0d2cd7790b9a6aa32d43d66c393c4f4c19e2280e587f53bb414e18"
+  secret: "db3b2c4fd9e8ee696d8e04757a66dbc658f60cfc6126fc269fb415fab1eab6c3"

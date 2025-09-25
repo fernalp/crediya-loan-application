@@ -1,29 +1,28 @@
 package com.crediya.solicitudes.consumer;
 
-import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder(toBuilder = true)
-public class CustomerResponse {
-    private BigInteger id;
-    private String numeroIdentificacion;
-    private String nombres;
-    private String apellidos;
-    private LocalDate fechaNacimiento;
-    private String direccion;
-    private String telefono;
-    private String correoElectronico;
-    private BigDecimal salario;
-    private Integer idRol;
+public record CustomerResponse(
+        BigInteger id,
+        @JsonProperty("numero_identificacion")
+        String numeroIdentificacion,
+        String nombres,
+        String apellidos,
+        @JsonProperty("fecha_nacimiento")
+        LocalDate fechaNacimiento,
+        String direccion,
+        String telefono,
+        @JsonProperty("correo_electronico")
+        String correoElectronico,
+        BigDecimal salario,
+        @JsonProperty("id_rol")
+        Integer idRol
+) {
+
 }

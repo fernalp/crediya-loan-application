@@ -1,6 +1,5 @@
 package com.crediya.solicitudes.r2dbc.repositories;
 
-import com.crediya.solicitudes.model.PageFilter;
 import com.crediya.solicitudes.r2dbc.entities.LoanApplicationEntity;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
@@ -18,7 +17,7 @@ public interface LoanApplicationReactiveRepository extends ReactiveCrudRepositor
     Flux<LoanApplicationEntity> findByLoanStatus(Integer idLoanStatus);
     @Query("SELECT COUNT(*) FROM loan_application WHERE id_loan_status = :idLoanStatus")
     Mono<Long> countByLoanStatus(Integer idLoanStatus);
-    @Query("SELECT * FROM loan_application WHERE id_loan_status = 'PENDIENTE' LIMIT :limit OFFSET :offset")
+    @Query("SELECT la.* FROM loan_application la LEFT OUTER JOIN loan_status ls ON la.id_loan_status = ls.id WHERE UPPER(ls.name) = 'PENDIENTE' ORDER BY la.id ASC LIMIT :limit OFFSET :offset")
     Flux<LoanApplicationEntity> findAllByPendingPage(Integer limit, Integer offset);
 
 }
