@@ -48,12 +48,14 @@ resilience4j:
         waitDurationInOpenState: "10s"
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
-
 springdoc:
   swagger-ui:
     path: "/api/doc/swagger-ui.html"
   api-docs:
     path: "/api/doc/api-docs"
-
 jwt:
   secret: "db3b2c4fd9e8ee696d8e04757a66dbc658f60cfc6126fc269fb415fab1eab6c3"
+adapter:
+  sqs:
+    region: "us-east-1"
+    queueUrl: "https://sqs.us-east-1.amazonaws.com/143207289798/crediya-notifications-queue"

@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .pathMatchers(LoanConstants.AUTH_WHITELIST).permitAll()
                         .anyExchange().authenticated()
 
-                ).addFilterAt(authFilter, SecurityWebFiltersOrder.AUTHENTICATION);
+                ).addFilterBefore(authFilter, SecurityWebFiltersOrder.AUTHENTICATION);
 
         return http.build();
     }

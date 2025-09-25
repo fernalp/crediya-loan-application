@@ -6,7 +6,6 @@ import com.crediya.solicitudes.model.customer.Customer;
 import com.crediya.solicitudes.model.customer.gateways.CustomerRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,7 +16,6 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class RestConsumer implements CustomerRepository {
 
     private final WebClient client;
@@ -66,9 +64,6 @@ public class RestConsumer implements CustomerRepository {
                 .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.empty())
                 .onStatus(Objects::isNull, response -> Mono.empty())
                 .bodyToFlux(CustomerResponse.class)
-                .map(customerResponse -> {
-                    log.info("CustomerResponse: {}", customerResponse);
-                    return CustomerRestMapper.toCustomer(customerResponse);
-                });
+                .map(CustomerRestMapper::toCustomer);
     }
 }

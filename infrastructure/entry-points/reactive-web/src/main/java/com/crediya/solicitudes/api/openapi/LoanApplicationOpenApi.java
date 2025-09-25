@@ -4,6 +4,7 @@ import com.crediya.solicitudes.api.constants.ApiConstants;
 import com.crediya.solicitudes.api.dtos.CreateLoanApplicationDTO;
 import com.crediya.solicitudes.api.dtos.LoanApplicationResponseDTO;
 import com.crediya.solicitudes.api.dtos.PageResponseDTO;
+import com.crediya.solicitudes.api.dtos.UpdateStatusLoanApplicationDTO;
 import com.crediya.solicitudes.api.enums.SortField;
 import com.crediya.solicitudes.api.enums.SortDirection;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -124,5 +125,41 @@ public class LoanApplicationOpenApi {
                 ;
     }
 
+    public Builder updateLoanApplicationStatus(Builder builder){
+        return builder
+                .operationId("updateLoanApplicationStatus")
+                .description("Actualizar estado de una solicitud de préstamo")
+                .tag("Solicitud de préstamo")
+                .requestBody(
+                        requestBodyBuilder()
+                                .required(true)
+                                .content(
+                                        contentBuilder()
+                                                .mediaType(MediaType.APPLICATION_JSON_VALUE)
+                                                .schema(schemaBuilder().implementation(UpdateStatusLoanApplicationDTO.class))
+                                        )
+                                )
+                .response(
+                        responseBuilder()
+                                .responseCode(ApiConstants.HTTP_200)
+                                .description(ApiConstants.DESCRIPTION_SUCCESS_RESPONSE)
+                                .content(
+                                        contentBuilder()
+                                                .mediaType(MediaType.APPLICATION_JSON_VALUE)
+                                                .schema(schemaBuilder().implementation(LoanApplicationResponseDTO.class))
+                                        )
+                        )
+                .response(
+                        responseBuilder()
+                                .responseCode(ApiConstants.HTTP_400)
+                                .description(ApiConstants.DESCRIPTION_BAD_REQUEST)
+                        )
+                .response(
+                        responseBuilder()
+                                .responseCode(ApiConstants.HTTP_500)
+                                .description(ApiConstants.DESCRIPTION_INTERNAL_ERROR)
+                        )
+                ;
+    }
 
 }

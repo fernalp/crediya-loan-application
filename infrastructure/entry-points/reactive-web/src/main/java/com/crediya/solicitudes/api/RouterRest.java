@@ -24,6 +24,7 @@ public class RouterRest {
         return route()
                 .POST(ApiConstants.PATH_API_LOAN_APPLICATIONS, handlerV1::createLoanApplication, LoanApplicationOpenApi::createLoanApplication)
                 .GET(ApiConstants.PATH_API_LOAN_APPLICATIONS, handlerV1::getAllLoanApplicationPending, LoanApplicationOpenApi::getAllLoanApplicationPending)
+                .PUT(ApiConstants.PATH_API_LOAN_APPLICATIONS + "/{loanApplicationId}", handlerV1::updateLoanApplicationStatus, LoanApplicationOpenApi::updateLoanApplicationStatus)
                 .build();
     }
 }

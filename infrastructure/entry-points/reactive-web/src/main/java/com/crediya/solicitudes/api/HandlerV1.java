@@ -3,12 +3,14 @@ package com.crediya.solicitudes.api;
 import com.crediya.solicitudes.api.constants.ApiConstants;
 import com.crediya.solicitudes.api.dtos.CreateLoanApplicationDTO;
 import com.crediya.solicitudes.api.dtos.PageResponseDTO;
+import com.crediya.solicitudes.api.dtos.UpdateStatusLoanApplicationDTO;
 import com.crediya.solicitudes.api.mappers.LoanApplicationDTOMapper;
 import com.crediya.solicitudes.api.validator.PaginationValidator;
 import com.crediya.solicitudes.api.validator.ReactiveValidator;
 import com.crediya.solicitudes.model.exception.ValidationException;
 import com.crediya.solicitudes.usecase.createloanapplication.CreateLoanApplicationUseCase;
 import com.crediya.solicitudes.usecase.findloanapplicationwithpendingstatus.FindLoanApplicationWithPendingStatusUseCase;
+import com.crediya.solicitudes.usecase.updatestatusloanapplication.UpdateStatusLoanApplicationUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,7 @@ public class HandlerV1 {
 
     private final CreateLoanApplicationUseCase createLoanApplicationUseCase;
     private final FindLoanApplicationWithPendingStatusUseCase findLoanApplicationWithPendingStatusUseCase;
+    private final UpdateStatusLoanApplicationUseCase updateStatusLoanApplicationUseCase;
     private final ReactiveValidator reactiveValidator;
     private final TransactionalOperator tx;
 
@@ -80,30 +83,34 @@ public class HandlerV1 {
                             .contentType(MediaType.APPLICATION_JSON)
                             .bodyValue(data);
                 })
-                .doOnError(error -> log.error("Error al consultar solicitudes pendientes: {}", error.getMessage(), error))
-                .onErrorResume(error -> {
-                    if (error instanceof ValidationException) {
-                        log.warn("Error de validación en parámetros: {}", error.getMessage());
-                        return ServerResponse
-                                .status(HttpStatus.BAD_REQUEST)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(java.util.Map.of(
-                                        "error", "Parámetros inválidos",
-                                        "mensaje", error.getMessage()
-                                ));
-                    } else {
-                        log.error("Error procesando solicitud de listado de préstamos pendientes", error);
-                        return ServerResponse
-                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(java.util.Map.of(
-                                        "error", ApiConstants.ERROR_INTERNAL_SERVER,
-                                        "mensaje", ApiConstants.ERROR_LOAN_APPLICATIONS_UNAVAILABLE
-                                ));
-                    }
-                });
-
+                .doOnError(error -> log.error("Error al consultar solicitudes pendientes: {}", error.getMessage()));
     }
+
+    @PreAuthorize("hasRole('ADVISOR')")
+    public Mono<ServerResponse> updateLoanApplicationStatus(ServerRequest serverRequest) {
+
+        String id = serverRequest.pathVariable("loanApplicationId");
+
+        return serverRequest.bodyToMono(UpdateStatusLoanApplicationDTO.class)
+                .flatMap(reactiveValidator::validate)
+                .flatMap(dto -> {
+                    if (!dto.loanApplicationId().toString().equals(id)) {
+                        return Mono.error(new ValidationException("El id de la solicitud no coincide con el id proporcionado"));
+                    }
+                    return updateStatusLoanApplicationUseCase.execute(dto.loanApplicationId(), dto.status());
+                })
+                .as(tx::transactional)
+                .flatMap(LoanApplicationDTOMapper::toLoanApplicationResponseDTO)
+                .flatMap(responseDTO -> {
+                    log.info("Solicitud de préstamo actualizada exitosamente " + responseDTO);
+                    return ServerResponse
+                            .status(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(responseDTO);
+                })
+                .doOnError(error -> log.error("Error al actualizar estado de solicitud de préstamo: {}", error.getMessage()));
+    }
+
 
     private static String extractToken(ServerRequest serverRequest) {
         return Objects.requireNonNull(serverRequest.headers().asHttpHeaders().getFirst(ApiConstants.HEADER_AUTHORIZATION)).substring(ApiConstants.TOKEN_PREFIX_LENGTH);
